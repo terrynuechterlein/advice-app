@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import minecraft_cherryblossoms1 from "./videos/minecraft_cherryblossoms1.mp4";
 
-function App() {
+export default function App() {
+  const [advice, setAdvice] = useState("");
+  const [count, updateCount] = useState(0);
+
+  async function getAdvice() {
+    const res = await fetch("https://api.adviceslip.com/advice");
+    const data = await res.json();
+    setAdvice(data.slip.advice);
+    updateCount((c) => c + 1);
+  }
+
+  useEffect(function () {
+    getAdvice();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="backgroundvideo">
+      <video src={minecraft_cherryblossoms1} autoPlay loop muted />
+
+      <div className="content">
+        <h1 style={{ fontSize: "48px" }}>{advice}</h1>
+
+        <button onClick={getAdvice}>Get Advice</button>
+      </div>
+      <div className="message">
+        <Message count={count} />
+      </div>
     </div>
   );
-}
 
-export default App;
+  function Message(props) {
+    return (
+      <p>
+        You have read <strong className="counterStyle">{props.count}</strong>{" "}
+        pieces of advice
+      </p>
+    );
+  }
+}
